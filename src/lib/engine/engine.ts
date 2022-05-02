@@ -14,15 +14,17 @@ class FriskyEngine {
     ticker.stop();
 
     const center_stage = new PIXI.Container();
-    center_stage.width = 240;
-    center_stage.height = 160;
-    center_stage.scale = new PIXI.ObservablePoint(null, null, 2, 2);
+    center_stage.width = 480;
+    center_stage.height = 320;
     const renderer = PIXI.autoDetectRenderer(this.options)
 
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
     let sprite = PIXI.Sprite.from(testSprite);
     const actor_stage = new PIXI.Container();
+    actor_stage.width = 240;
+    actor_stage.height = 160;
+    actor_stage.scale = new PIXI.ObservablePoint(null, null, 2, 2);
     actor_stage.addChild(sprite);
 
     center_stage.addChild(actor_stage);
