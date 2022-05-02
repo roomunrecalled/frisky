@@ -14,8 +14,8 @@
       useContextAlpha: true,
       clearBeforeRender: true,
       preserveDrawingBuffer: false,
-      width: 384,
-      height: 480,
+      width: 480,
+      height: 320,
       legacy: false
     });
     frisky.run();

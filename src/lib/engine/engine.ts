@@ -13,27 +13,28 @@ class FriskyEngine {
     ticker.autoStart = false;
     ticker.stop();
 
-    const stage = new PIXI.Container();
+    const center_stage = new PIXI.Container();
+    center_stage.width = 240;
+    center_stage.height = 160;
+    center_stage.scale = new PIXI.ObservablePoint(null, null, 2, 2);
     const renderer = PIXI.autoDetectRenderer(this.options)
 
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-    let renderTexture = PIXI.RenderTexture.create({width: 192, height: 240});
-    {
-
-    }
-
     let sprite = PIXI.Sprite.from(testSprite);
-    stage.addChild(sprite);
+    const actor_stage = new PIXI.Container();
+    actor_stage.addChild(sprite);
+
+    center_stage.addChild(actor_stage);
 
     // Add a ticker callback to move the sprite back and forth
     let elapsed = 0.0;
     ticker.add((delta) => {
       elapsed += delta;
 
-      sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
+      //sprite.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
 
-      renderer.render(stage);
+      renderer.render(center_stage);
     });
 
     ticker.start();
