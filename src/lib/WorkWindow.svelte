@@ -1,6 +1,7 @@
 <script>
   import WorkPage from './pages/WorkPage.svelte';
 
+  import AboutPage from './pages/AboutPage.svelte';
   import FriskyPreview from './pages/FriskyPreview.svelte';
   import RoomPage from './pages/RoomPage.svelte';
 
@@ -14,11 +15,6 @@
   import ScriptsPage from './pages/ScriptsPage.svelte';
 
   const pages = [
-    {
-      label: 'Game',
-      color: '#eee',
-      component: FriskyPreview
-    },
     {
       label: 'Room',
       color: '#eac',
@@ -62,26 +58,36 @@
   ];
 
   const left_pages = pages.slice(0);
+  left_pages.unshift({
+    label: 'Frisky',
+    color: '#fff',
+    component: AboutPage
+  });
+  const right_pages = pages.slice(0);
+  right_pages.unshift({
+    label: 'Game',
+    color: '#ddd',
+    component: FriskyPreview
+  });
 </script>
 
-<div class='page left_page'>
-  <WorkPage onLeft={true} items={left_pages} />
-</div>
-<div class='page right_page'>
-  <WorkPage onLeft={false} items={pages} />
+<div class='pages'>
+  <div class='page left_page'>
+    <WorkPage onLeft={true} items={left_pages} />
+  </div>
+  <div class='page right_page'>
+    <WorkPage onLeft={false} items={right_pages} />
+  </div>
 </div>
 
+
 <style>
+  .pages {
+    display: flex; 
+    margin: 20px 0;
+    padding: 10px;
+  }
   div.page {
-    padding: 1% 0%;
-    position: fixed;
-    top: 0;
-    width: 50%;
-  }
-  .left_page {
-    left: 0;
-  }
-  .right_page {
-    right: 0;
+    width: 30vw;
   }
 </style>

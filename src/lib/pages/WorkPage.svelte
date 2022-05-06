@@ -11,19 +11,17 @@
 <div class={onLeft ? 'layout on_left' : 'layout on_right'}>
   <div class={onLeft ? 'tabs on_left' : 'tabs on_right'}>
     <ul>
-      {#if onLeft} <li><span id='title'><b>FRISKY</b></span></li> {/if}
       {#each items as item}
-        {#if !onLeft || item.value !== 0}
-          <li class={activeTabValue === item.value ? 'active' : ''} >
-            <span on:click={handleClick(item.value)}
-                  style='background-color: {item.color};
-                        {onLeft ? 'border-right' : 'border-left'}: 4px 
-                          {activeTabValue === item.value ? 'solid' : 'transparent'} 
-                          {item.color}' >
-              {item.label}
-            </span>
-          </li>
-        {/if}
+        <li class={activeTabValue === item.value ? 'active' : ''} >
+          <span on:click={handleClick(item.value)}
+                style='background-color: {item.color};
+                      {onLeft ? 'border-right' : 'border-left'}: 4px 
+                        {activeTabValue === item.value ? 'solid' : 'transparent'} 
+                        {item.color};
+                      {onLeft && item.value === 0 ? 'font-weight: bold' : ''}' >
+            {item.label}
+          </span>
+        </li>
       {/each}
     </ul>
   </div>
@@ -53,7 +51,7 @@
     border: 2px solid #000;
     border-radius: .25rem;
     min-width: 240px;
-    width: calc(100% - 80px);
+    width: calc(100% - 90px);
     padding: 1em 0em;
   }
   .box.on_left {
@@ -68,7 +66,7 @@
   }
 
   .tabs {
-    width: 70px;
+    width: 80px;
   }
 
   .tabs.on_left {
@@ -109,10 +107,6 @@
     padding: 0.2rem 0.1rem;
     cursor: pointer;
   }
-  span#title {
-    border: 0;
-  }
-
   span:hover {
     border-color: #bbb;
   }
