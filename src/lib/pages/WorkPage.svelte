@@ -11,7 +11,7 @@
 <div class={onLeft ? 'layout on_left' : 'layout on_right'}>
   <div class={onLeft ? 'tabs on_left' : 'tabs on_right'}>
     <ul>
-      {#if onLeft} <li><span style='border: 0;'><b>FRISKY</b></span></li> {/if}
+      {#if onLeft} <li><span id='title'><b>FRISKY</b></span></li> {/if}
       {#each items as item}
         {#if !onLeft || item.value !== 0}
           <li class={activeTabValue === item.value ? 'active' : ''} >
@@ -108,6 +108,9 @@
     display: block;
     padding: 0.2rem 0.1rem;
     cursor: pointer;
+  }
+  span#title {
+    border: 0;
   }
 
   span:hover {
