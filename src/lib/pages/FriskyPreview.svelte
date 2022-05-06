@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import Frisky from './engine/engine';
+  import Frisky from '../engine/engine';
 
   let pixiJsElement;
 
@@ -14,8 +14,8 @@
       useContextAlpha: true,
       clearBeforeRender: true,
       preserveDrawingBuffer: false,
-      width: 480,
-      height: 320,
+      width: 240,
+      height: 160,
       legacy: false
     });
     frisky.run();

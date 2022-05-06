@@ -1,9 +1,9 @@
 <script lang="ts">
-  import FriskyPreview from "./lib/FriskyPreview.svelte";
+  import WorkWindow from "./lib/WorkWindow.svelte";
 </script>
 
 <main>
-  <FriskyPreview />
+  <WorkWindow />
 </main>
 
 <style>
