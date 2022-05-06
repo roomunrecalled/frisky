@@ -1,26 +1,38 @@
 <script>
   export let onLeft = false;
   export let items = [];
-  export let activeTabValue = 1;
+  export let activeTabValue = 0;
 
+  items.map((item, index) => { item.value = index; });
+  if (onLeft) activeTabValue = 1;
   const handleClick = value => () => (activeTabValue = value);
 </script>
 
 <div class={onLeft ? 'layout on_left' : 'layout on_right'}>
   <div class={onLeft ? 'tabs on_left' : 'tabs on_right'}>
     <ul>
+      {#if onLeft} <li><span style='border: 0;'><b>FRISKY</b></span></li> {/if}
       {#each items as item}
-        <li class={activeTabValue === item.value ? 'active' : ''} >
-          <span on:click={handleClick(item.value)}>{item.label}</span>
-        </li>
+        {#if !onLeft || item.value !== 0}
+          <li class={activeTabValue === item.value ? 'active' : ''} >
+            <span on:click={handleClick(item.value)}
+                  style='background-color: {item.color};
+                        {onLeft ? 'border-right' : 'border-left'}: 4px 
+                          {activeTabValue === item.value ? 'solid' : 'transparent'} 
+                          {item.color}' >
+              {item.label}
+            </span>
+          </li>
+        {/if}
       {/each}
     </ul>
   </div>
 
-  <div class={onLeft ? 'box on_left' : 'box on_right'}>
-  {#each items as page}
-    {#if activeTabValue === page.value}
-      <svelte:component this={page.component}/>
+  <div class={onLeft ? 'box on_left' : 'box on_right'}
+       style='background-color: {items[activeTabValue].color};'>
+  {#each items as item}
+    {#if activeTabValue === item.value}
+      <svelte:component this={item.component}/>
     {/if}
   {/each}
   </div>
@@ -38,10 +50,10 @@
     flex-direction: row-reverse;
   }
   .box {
-    border: 1px solid #000;
+    border: 2px solid #000;
     border-radius: .25rem;
     min-width: 240px;
-    width: calc(100% - 76px);
+    width: calc(100% - 80px);
     padding: 1em 0em;
   }
   .box.on_left {
@@ -61,11 +73,13 @@
 
   .tabs.on_left {
     margin-left: 2px;
-    border-right: 1px solid #000;
+    padding-right: 1px;
+    border-right: 2px solid #000;
   }
   .tabs.on_right {
     margin-right: 2px;
-    border-left: 1px solid #000;
+    padding-left: 1px;
+    border-left: 2px solid #000;
   }
 
   ul {
@@ -88,7 +102,7 @@
   }
 
   span {
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     border-left: 0px;
     border-right: 0px;
     display: block;
@@ -97,25 +111,24 @@
   }
 
   span:hover {
-    border-color: #ccc;
+    border-color: #bbb;
   }
 
   li.active {
-    border-top: 1px solid #000;
-    border-bottom: 1px solid #000;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
   }
 
   .tabs.on_left li.active {
     border-top-left-radius: .25rem;
     border-bottom-left-radius: .25rem;
-    border-left: 1px solid #000;
-    border-right: 2px solid #fff;
+    border-left: 2px solid #000;
+    margin-right: -3px;
   }
   .tabs.on_right li.active {
     border-top-right-radius: .25rem;
     border-bottom-right-radius: .25rem;
-    border-right: 1px solid #000;
-    border-left: 2px solid #fff;
+    border-right: 2px solid #000;
+    margin-left: -3px;
   }
-
 </style>
