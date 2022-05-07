@@ -1,10 +1,9 @@
 <script>
   export let onLeft = false;
   export let items = [];
-  export let activeTabValue = 0;
+  export let activeTabValue;
 
   items.map((item, index) => { item.value = index; });
-  if (onLeft) activeTabValue = 1;
   const handleClick = value => () => (activeTabValue = value);
 </script>
 
@@ -39,7 +38,7 @@
 <style>
   .layout {
     display: flex;
-    min-height: 360px;
+    height: 400px;
   }
   .layout.on_left {
     flex-direction: row;
@@ -50,8 +49,7 @@
   .box {
     border: 2px solid #000;
     border-radius: .25rem;
-    min-width: 240px;
-    width: calc(100% - 90px);
+    width: calc(100% - 100px);
     padding: 1em 0em;
   }
   .box.on_left {
@@ -66,7 +64,7 @@
   }
 
   .tabs {
-    width: 80px;
+    width: 90px;
   }
 
   .tabs.on_left {

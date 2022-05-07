@@ -16,50 +16,50 @@
 
   const pages = [
     {
-      label: 'Room',
-      color: '#eac',
+      label: 'Rooms',
+      color: '#7ad',
       component: RoomPage
     },
     {
-      label: 'Palette',
-      color: '#cec',
+      label: 'Palettes',
+      color: '#4b9',
       component: PalettePage
     },
     {
-      label: 'Backdrop',
-      color: '#ecd',
+      label: 'Backdrops',
+      color: '#9df',
       component: BackdropPage
     },
     {
       label: 'Tiles',
-      color: '#dde',
+      color: '#ed8',
       component: TilePage
     },
     {
       label: 'Sprites',
-      color: '#dee',
+      color: '#bc3',
       component: SpritePage
     },
     {
       label: 'Portraits',
-      color: '#cde',
+      color: '#aa0',
       component: PortraitPage
     },
     {
       label: 'Actors',
-      color: '#dea',
+      color: '#e86',
       component: ActorsPage
     },
     {
       label: 'Scripts',
-      color: '#cae',
+      color: '#fab',
       component: ScriptsPage
     }
   ];
 
   const left_pages = pages.slice(0);
   left_pages.unshift({
-    label: 'Frisky',
+    label: 'FRISKY',
     color: '#fff',
     component: AboutPage
   });
@@ -69,17 +69,25 @@
     color: '#ddd',
     component: FriskyPreview
   });
+
+  let activeLeftTab = 0;
+  let activeRightTab = 0;
 </script>
 
 <div class='pages'>
   <div class='page left_page'>
-    <WorkPage onLeft={true} items={left_pages} />
+    <WorkPage 
+      onLeft={true} 
+      items={left_pages} 
+      activeTabValue={activeLeftTab} />
   </div>
   <div class='page right_page'>
-    <WorkPage onLeft={false} items={right_pages} />
+    <WorkPage 
+      onLeft={false} 
+      items={right_pages} 
+      activeTabValue={activeRightTab} />
   </div>
 </div>
-
 
 <style>
   .pages {
@@ -88,6 +96,7 @@
     padding: 10px;
   }
   div.page {
-    width: 30vw;
+    width: 480px;
+    margin: 0 12px;
   }
 </style>

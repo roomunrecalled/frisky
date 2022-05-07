@@ -1,5 +1,8 @@
 <script lang="ts">
-  import WorkWindow from "./lib/WorkWindow.svelte";
+  import WorkWindow from './lib/WorkWindow.svelte';
+  import starter_game from './assets/starter_game.json'
+
+  console.log(starter_game);
 </script>
 
 <main>
@@ -14,7 +17,9 @@
 
   main {
     text-align: center;
-    padding: 1em;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1em 0;
   }
 </style>
