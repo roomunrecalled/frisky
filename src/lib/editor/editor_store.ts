@@ -8,7 +8,7 @@ function createGameStore() {
   const { subscribe, set, update } = writable(workingGame);
 
   function addGameData(data_type: DataType, data) {
-    const newData = workingGame[data_type.toString()].slice(0);
+    const newData = workingGame[data_type.toString()].slice();
     newData.sort((a,b) => {
       const idA = a.id.toUpperCase();
       const idB = b.id.toUpperCase();
@@ -32,12 +32,26 @@ function createGameStore() {
     console.log(data);
     console.log(newData);
 
-    workingGame[data_type] = newData;
+    workingGame[data_type.toString()] = newData;
     set(workingGame);
   };
 
-  function modifyGameData() {
+  function modifyGameData(index: number, update: FieldUpdate) {
+    const newArray = workingGame[update.data_type.toString()].slice();
+    console.log('starting MODIFY')
+    console.log(workingGame);
+    console.log(index)
+    console.log(newArray)
 
+    const newData = newArray[index];
+    newArray.splice(index);
+
+    newData[update.field] = update.value;
+    newArray.push(newData);
+
+    workingGame[update.data_type.toString()] = newArray;
+    set(workingGame);
+    console.log(workingGame);
   };
 
   function deleteGameData() {
@@ -45,12 +59,13 @@ function createGameStore() {
   };
 
   function replaceGameData() {
-
   }
 
   return {
     subscribe,
     updateData: (update: FieldUpdate) => {
+      console.log('running UPDATE')
+      console.log(workingGame);
 
       if (update.change_type === ChangeType.Add) {
         addGameData(update.data_type, update.value);
@@ -73,6 +88,12 @@ function createGameStore() {
       }
 
       // perform operation
+      switch (update.change_type) {
+        case (ChangeType.Modify):
+          modifyGameData(index, update);
+          break;
+        default:
+      }
     },
     update,
     reset: () => set(workingGame)

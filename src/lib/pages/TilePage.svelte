@@ -2,11 +2,9 @@
   import { gameStore, referenceGame } from '../editor/editor_store';
 
   let referenceTiles = $referenceGame.tiles;
-  let tiles;
+  let tiles = $gameStore.tiles.map(tile => {return {...tile}});
 
-  gameStore.subscribe(game => {
-    tiles = game['tiles'].slice(0);
-  });
+  let currentTileId = tiles[0].id;
 
   function addTile() {
     gameStore.updateData({
@@ -20,10 +18,43 @@
     })
   }
 
+  function changeTile(event) {
+    const targetId = event.target.id;
+    const [id, field] = targetId.split('-');
+    const value = event.target.value;
+
+    console.log($gameStore);
+
+    const update = {
+      id,
+      data_type: 'tiles',
+      change_type: 'modify',
+      field,
+      value
+    }
+    gameStore.updateData(update);
+  }
+
 </script>
 
-{#each tiles as tile}
-  <h1>{tile.id}</h1>
-{/each}
+<div>
+  {#each tiles as tile}
+    {#if currentTileId === tile.id}
+      <b>Name:</b> 
+      <input  id={tile.id + '-name'}
+              on:input={changeTile} bind:value={tile.name}>
+      <br>
+      <b>Is Solid:</b> 
+      <input  id={tile.id + '-is_solid'}
+              on:change={changeTile} type=checkbox bind:checked={tile.is_solid}>
+    {/if}
+  {/each}
+</div>
 
-<button on:click={addTile}></button>
+<style>
+  div {
+    padding-left: 10px;
+    text-align: left;
+  }
+
+</style>
