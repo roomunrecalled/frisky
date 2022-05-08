@@ -10,17 +10,149 @@ class Game {
   actors: Actor[]
   scripts: Script[]
 
-  constructor (gameJson: { metadata: GameMetadata, data: GameData}) {
-    this.metadata = gameJson.metadata;
-    this.rooms = gameJson.data.rooms
-    this.palettes = gameJson.data.palettes
-    this.backdrops = gameJson.data.backdrops
-    this.tiles = gameJson.data.tiles
-    this.sprites = gameJson.data.sprites
-    this.portraits = gameJson.data.portraits
-    this.actors = gameJson.data.actors
-    this.scripts = gameJson.data.scripts
+  static fromJson (gameJson: { metadata: GameMetadata, data: GameData}) {
+    const game = new Game();
+
+    game.metadata = gameJson.metadata;
+    game.rooms = gameJson.data.rooms
+    game.palettes = gameJson.data.palettes
+    game.backdrops = gameJson.data.backdrops
+    game.tiles = gameJson.data.tiles
+    game.sprites = gameJson.data.sprites
+    game.portraits = gameJson.data.portraits
+    game.actors = gameJson.data.actors
+    game.scripts = gameJson.data.scripts
   }
+
+  static parse (rawGame: string) {
+    const game = new Game();
+
+    const gameSegments = rawGame.split(gameSectionRegex);
+    console.log(gameSegments);
+    const segmentMap = generateSegmentMap(gameSegments);
+    console.log(segmentMap);
+
+    game.metadata = parseMetadata(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Metadata));
+    game.rooms = parseRooms(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Room));
+    game.palettes = parsePalettes(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Palette));
+    game.backdrops = parseBackdrops(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Backdrop));
+    game.tiles = parseTiles(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Tile));
+    game.sprites = parseSprites(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Sprite));
+    game.portraits = parsePortraits(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Portrait));
+    game.actors = parseActors(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Actor));
+    game.scripts = parseScripts(
+      getRawSegment(gameSegments,segmentMap,GameDataType.Script));
+
+    return game;
+  }
+}
+
+const gameSectionRegex = new RegExp('(?<segment_name>::[A-Z]{4,8}::)')
+
+function generateSegmentMap(gameSegmentArray: string[]) {
+  return gameSegmentArray.reduce(
+    (filtered, currentValue, index) => {
+      if (gameSectionRegex.test(currentValue)) {
+        const result = currentValue.match(currentValue);
+        filtered.push({
+          // This would be very inadvisable except that any regex matches will
+          // always be bookended by '::'. Now its just inadvisable.
+          section: result[0].slice(2,-2),
+          index: index
+        })
+      }
+
+      return filtered;
+    }, []
+  )
+}
+
+function getRawSegment(
+    gameSegments: string[], 
+    gameSegmentMap: { section: string, index: number }[], 
+    segmentName: GameDataType) {
+  const item = gameSegmentMap.find((element) => element.section === segmentName.toString())
+
+  if (item) {
+    return gameSegments[item.index + 1];
+  }
+  else {
+    return '';
+  }
+}
+
+function parseData(rawSegment: string) {
+  return rawSegment.split(/\n+/).filter(element => element.length > 0);
+}
+
+function parseMetadata(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+
+  const metadata = {};
+
+  return metadata;
+}
+
+function parseRooms(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+function parsePalettes(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+function parseBackdrops(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+function parseTiles(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+
+function parseSprites(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+function parsePortraits(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+function parseActors(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+function parseScripts(rawSegment: string) {
+  const lines = parseData(rawSegment);
+  console.log(lines);
+}
+
+enum GameDataType {
+  Metadata = 'META',
+  Room = 'ROOM',
+  Palette = 'PALETTE',
+  Backdrop = 'BACKDROP',
+  Tile = 'TILE',
+  Sprite = 'SPRITE',
+  Portrait = 'PORTRAIT',
+  Actor = 'ACTOR',
+  Script = 'Script'
 }
 
 declare type GameMetadata = {

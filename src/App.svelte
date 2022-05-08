@@ -1,8 +1,9 @@
 <script lang="ts">
   import WorkWindow from './lib/WorkWindow.svelte';
-  import starter_game from './assets/starter_game.json'
+  import FriskyEditor from './lib/editor/editor';
 
-  console.log(starter_game);
+  const editor = new FriskyEditor();
+  console.log(editor);
 </script>
 
 <main>
