@@ -90,14 +90,31 @@ function getRawSegment(
 }
 
 function parseData(rawSegment: string) {
-  return rawSegment.split(/\n+/).filter(element => element.length > 0);
+  return rawSegment.split(/\n+/).filter(
+    element => element.length > 0 && !element.startsWith('#'));
 }
 
 function parseMetadata(rawSegment: string) {
   const lines = parseData(rawSegment);
-  console.log(lines);
+  const metadata = {
+    author: '',
+    frisky_version: '',
+    game_version: '',
+    init_pos: [0,0],
+    init_room_id: '',
+    title: ''
+  };
 
-  const metadata = {};
+  for (const line of lines) {
+    const [fieldName, ...values] = line.split(' ');
+    if (fieldName !== 'INIT_POS') {
+      metadata[fieldName.toLocaleLowerCase()] = values.join(' ');
+    } else {
+      metadata[fieldName.toLocaleLowerCase()] = 
+        [parseInt(values[0]), parseInt(values[1])];
+    }
+  }
+  console.log(metadata);
 
   return metadata;
 }
@@ -159,10 +176,9 @@ declare type GameMetadata = {
   title: string, 
   author: string, 
   frisky_version: string, 
-  init_data: {
-    room_id: string,
-    position: number[] 
-  } 
+  game_version: string,
+  init_room_id: string,
+  init_pos: number[] 
 }
 
 declare type GameData = {

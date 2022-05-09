@@ -3,38 +3,38 @@ TITLE Starter Game
 AUTHOR roomunrecalled
 FRISKY_VERSION 0.0.1
 GAME_VERSION 0.0.1
-INIT_ROOM r0
+INIT_ROOM_ID r00
 INIT_POS 4 4
 
 ::ROOM::
-ROOM r0
-BG 0x000
-FG 0xeee
-PAL p0
-BACKDROP b0
-#ACTORS []
+ROOM r00
+BG #000
+FG #eee
+PALETTE_ID p00
+BACKDROP_ID b00
+ACTOR_IDS 
 NAME Starter Room
 
 ::PALETTE::
-PAL p0
-COLORS 0x444 0x777 0xaaa 0xddd
+PAL p00
+COLORS #444 #777 #aaa #ddd
 NAME grayscale
 
 ::BACKDROP::
-BACKDROP b0
-t0 t1 t1 t1 t1 t1 t1 t1 t1 t1 t0 t0 t0 t0 t1
-t0 t1 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t1
-t0 t1 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t1
-t0 t1 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t1
-t0 t1 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t0 t1
-t0 t1 t1 t1 t1 t1 t1 t1 t1 t1 t0 t0 t0 t0 t1
-t0 t1 t1 t1 t1 t1 t1 t1 t1 t1 t0 t0 t0 t0 t1
-t0 t1 t1 t1 t1 t1 t1 t1 t1 t1 t0 t0 t0 t0 t1
-t0 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1
+BACKDROP b00
+t00 t01 t01 t01 t01 t01 t01 t01 t01 t01 t00 t00 t00 t00 t01
+t00 t01 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t01
+t00 t01 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t01
+t00 t01 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t01
+t00 t01 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t00 t01
+t00 t01 t01 t01 t01 t01 t01 t01 t01 t01 t00 t00 t00 t00 t01
+t00 t01 t01 t01 t01 t01 t01 t01 t01 t01 t00 t00 t00 t00 t01
+t00 t01 t01 t01 t01 t01 t01 t01 t01 t01 t00 t00 t00 t00 t01
+t00 t01 t01 t01 t01 t01 t01 t01 t01 t01 t01 t01 t01 t01 t01
 NAME Starter Backdrop
 
 ::TILE::
-TIL t0
+TIL t00
 0000 0000 0000 0000
 0000 0000 0000 0000
 0000 0000 0000 0000
@@ -42,12 +42,12 @@ TIL t0
 SOLID false
 NAME empty
 
-TIL t1
+TIL t01
 ffff ffff c003 c003 
 c003 c003 c3c3 c3c3
 c3c3 c3c3 c003 c003 
 c003 c003 ffff ffff
-SOLID true
+IS_SOLID true
 NAME block
 
 ::SPRITE::
