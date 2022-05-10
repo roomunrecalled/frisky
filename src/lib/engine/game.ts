@@ -28,9 +28,9 @@ class Game {
     const game = new Game();
 
     const gameSegments = rawGame.split(gameSectionRegex);
-    console.log(gameSegments);
+    //console.log(gameSegments);
     const segmentMap = generateSegmentMap(gameSegments);
-    console.log(segmentMap);
+    //console.log(segmentMap);
 
     game.metadata = parseMetadata(
       getRawSegment(gameSegments,segmentMap,GameDataType.Metadata));
@@ -94,6 +94,20 @@ function parseData(rawSegment: string) {
     element => element.length > 0 && !element.startsWith('#'));
 }
 
+function generateSubdataMap(startingLineStartsWith: string, lines: string[]) {
+  const tileDataMap = [];
+  let startLine = 0;
+  for (let i = 0; i < lines.length; i += 1) {
+    if (lines[i].startsWith(startingLineStartsWith)) {
+      startLine = i
+    } else if (lines[i].startsWith('NAME')) {
+      tileDataMap.push([startLine, i]);
+    }
+  }
+ 
+  return tileDataMap;
+}
+
 function parseMetadata(rawSegment: string) {
   const lines = parseData(rawSegment);
   const metadata = {
@@ -121,24 +135,195 @@ function parseMetadata(rawSegment: string) {
 
 function parseRooms(rawSegment: string) {
   const lines = parseData(rawSegment);
-  console.log(lines);
+  const rooms = []
+
+  const roomDataMap = generateSubdataMap('ROOM', lines);
+  for (const subsection of roomDataMap) {
+    rooms.push(parseRoom(lines.slice(subsection[0], subsection[1] + 1)));
+  }
+
+  console.log(rooms);
+  return rooms;
+}
+
+function parseRoom(roomLines: string[]) {
+  const room = {
+    id: 'r00',
+    background_color: '#000',
+    foreground_color: '#eee',
+    palette_id: 'p00',
+    backdrop_id: 'b00',
+    actor_ids: [],
+    name: ''
+  };
+
+  for (const line of roomLines) {
+    const [field, ...values] = line.split(' ');
+
+    switch(field) {
+      case('ROOM'):
+        room.id = values[0];
+        break;
+      case('BG'):
+        room.background_color = values[0];
+        break;
+      case('FG'):
+        room.foreground_color = values[0];
+        break;
+      case('ACTOR_IDS'):
+        room.actor_ids = values;
+        break;
+      case('NAME'):
+        room.name = values.join(' ');
+        break;
+      default:
+        room[field.toLocaleLowerCase()] = values[0];
+        break;
+    }
+  }
+
+  return room;
 }
 
 function parsePalettes(rawSegment: string) {
   const lines = parseData(rawSegment);
-  console.log(lines);
+  const palettes = []
+
+  const paletteDataMap = generateSubdataMap('PAL', lines);
+  for (const subsection of paletteDataMap) {
+    palettes.push(parsePalette(lines.slice(subsection[0], subsection[1] + 1)));
+  }
+
+  console.log(palettes);
+  return palettes;
+}
+
+function parsePalette(paletteLines: string[]) {
+  const palette = {
+    id: 'p00',
+    colors: ['#000','#000','#000','#000'],
+    name: ''
+  }
+  for (const line of paletteLines) {
+    const [field, ...values] = line.split(' ');
+    switch(field) {
+      case('PAL'):
+        palette.id = values[0];
+        break;
+      case('COLORS'):
+        palette.colors = values;
+        break;
+      default:
+        palette[field.toLocaleLowerCase()] = values.join(' ');
+    }
+  }
+
+  return palette;
 }
 
 function parseBackdrops(rawSegment: string) {
   const lines = parseData(rawSegment);
-  console.log(lines);
+
+  const backdrops = [];
+
+  const backdropDataMap = generateSubdataMap('BACKDROP', lines);
+
+  for (const subsection of backdropDataMap) {
+    backdrops.push(
+      parseBackdrop(lines.slice(subsection[0], subsection[1] + 1))
+    );
+  }
+  console.log(backdrops);
+
+  return backdrops;
+}
+
+function parseBackdrop(backdropLines: string[]) {
+  const fieldRegex = new RegExp('^(BACKDROP|NAME) .+');
+  const backdrop = {
+    id: 'b00',
+    data: [],
+    name: ''
+  }
+  for (const line of backdropLines) {
+    if (fieldRegex.test(line)) {
+      const [field, ...values] = line.split(' ');
+      switch (field) {
+        case ('BACKDROP'):
+          backdrop.id = values[0];
+          break;
+        default:
+          backdrop[field.toLocaleLowerCase()] = values.join(' ');
+          break;
+      }
+    } else {
+      for (const tile of line.split(' ').filter(val => val.length > 0)) {
+        backdrop.data.push(tile);
+      }
+    }
+  }
+
+  return backdrop;
 }
 
 function parseTiles(rawSegment: string) {
   const lines = parseData(rawSegment);
-  console.log(lines);
+
+  const tiles = [];
+
+  // Tile data should start with the 'TIL <id>' line and end with the
+  // 'NAME <name>' line.
+  const tileDataMap = generateSubdataMap('TIL', lines);
+  //console.log(tileDataMap);
+
+  for (const data of tileDataMap) {
+    tiles.push(
+      parseTile(lines.slice(data[0], data[1] + 1))
+    )
+  }
+  console.log(tiles);
+
+  return tiles;
 }
 
+function parseTile(tileLines: string[]) {
+  //console.log(tileLines.join('\n'));
+  const fieldRegex = new RegExp('^(TIL|IS_SOLID|NAME) .+');
+  const tile = {
+    id: 't00',
+    name: 'tile',
+    data: new Array(256),
+    is_solid: false
+  }
+
+  let dataIndex = 0;
+  for (const line of tileLines) {
+    if (fieldRegex.test(line)) {
+      const [field, ...values] = line.split(' ');
+      switch (field) {
+        case('TIL'):
+          tile.id = values[0];
+          break;
+        case('IS_SOLID'):
+          tile.is_solid = values[0] == 'true';
+          break;
+        default:
+          tile[field.toLocaleLowerCase()] = values.join(' ');
+      }
+    // if the regex doesn't match, this line is image data.
+    } else {
+      for (const tileRow of line.split(' ').filter(val => val.length > 0)) {
+        const numString = parseInt(tileRow, 16).toString(2).padStart(16, '0');
+        for (const digit of numString) {
+          tile.data[dataIndex] = parseInt(digit);
+          dataIndex += 1;
+        }
+      }
+    }
+  }
+
+  return tile;
+}
 
 function parseSprites(rawSegment: string) {
   const lines = parseData(rawSegment);
