@@ -10,9 +10,10 @@
   const dispatch = createEventDispatcher();
   let pickerPane, hueSlider, pickerPaneContext, hueSliderContext;
 
-  $: hueColor = [];
+  $: hueColor = pickerColors[0];
   $: currentColor = clampColor([0, 0.5, 1.0], 'hsv');
-  const [paneWidth, paneHeight, sliderWidth, sliderHeight] = [192, 128, 276, 24];
+  const [paneWidth, paneHeight, sliderWidth, sliderHeight] = [204, 136, 276, 24];
+  const [blockWidth, blockHeight] = [paneWidth/17, paneHeight/17];
 
   function setColor(r,g,b) {
     currentColor = clampColor([r,g,b]);
@@ -34,84 +35,15 @@
     pickerPaneContext.fillStyle = 'black';
     pickerPaneContext.fillRect(0, 0, paneWidth, paneHeight);
 
-    // top left corner is white
-    // top right corner is the huecolor
-    // bottom corners are black.
-    //const whiteColor = [255,255,255];
-    //const blackColor = [0,0,0];
-
-    const blockWidth = Math.floor(paneWidth/17);
-    const blockHeight = Math.floor(paneHeight/17);
-
-    //const newPickerColors = [];
     console.log(pickerColors);
     const pickerColor = pickerColors[0];
-    //for (const pickerColor of pickerColors) {
-      //const hueColor = chroma(pickerColor.hue_color).rgb();
-
-      //const paneColors = [];
       for (let y = 0; y <= 16; y += 1) {
-        for (let x = 0; x <= 17; x += 1) {
-          const paneIndex = y * 16 + x;
-          //if (x % 4 == 0 && y % 4 == 0) {
-            console.log("x: " + x + ",y: " + y + "; paneIndex: " + paneIndex + 
-            "; hue: " + pickerColor.hue + "; paneColor:" + pickerColor.paneColors[paneIndex].join(','));
-          //}
+        for (let x = 0; x <= 16; x += 1) {
+          const paneIndex = y * 17 + x;
           pickerPaneContext.fillStyle = chroma(pickerColor.paneColors[paneIndex]).hex();
           pickerPaneContext.fillRect(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
-
-          /*
-          // y controls the luminance/value
-          const maxSaturationValue = [];
-          for (let c = 0; c < 3; c += 1) {
-            let channelValue = hueColor[c] - blackColor[c];
-            // this is the pure gradient difference from white of this channel at this x axis.
-            channelValue = (channelValue) * (y/16);
-            channelValue = hueColor[c] - channelValue;
-            maxSaturationValue[c] = channelValue;
-          }
-          const minSaturationValue = [0,0,0];
-          for (let c = 0; c < 3; c += 1) {
-            let channelValue = whiteColor[c] - blackColor[c];
-            // this is the pure gradient difference from white of this channel at this x axis.
-            channelValue = (channelValue) * (y/16);
-            channelValue = whiteColor[c] - channelValue;
-            minSaturationValue[c] = channelValue;
-          }
-
-          // x controls the saturation
-          const currentColor = [0,0,0]
-          for (let c = 0; c < 3; c += 1) {
-            let channelValue = minSaturationValue[c] - maxSaturationValue[c];
-            // this is the pure gradient difference from white of this channel at this x axis.
-            channelValue = (channelValue) * (x/16);
-            channelValue = minSaturationValue[c] - channelValue;
-            currentColor[c] = channelValue;
-          }
-
-          // get the clamped value.
-          const clampedColor = clampColor(currentColor);
-          //console.log(clampedColor);
-
-          // paint the value
-          pickerPaneContext.fillStyle = clampedColor.hex();
-          //pickerPaneContext.fillStyle = chroma(currentColor).hex();
-          pickerPaneContext.fillRect(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
-          
-          paneColors.push(clampedColor.rgb());
-
-          //console.log('color: ' + chroma(currentColor).rgb() + '; x: ' + x * blockWidth + ', y: '+y * blockHeight);
-          */
-        //}
       }
-
-      //const newPickerColor = {};
-      //newPickerColor.hue = pickerColor.hue_color;
-      //newPickerColor.paneColors = paneColors;
-      //newPickerColors.push(newPickerColor);
     }
-
-    //console.log(newPickerColors);
   }
 
   function drawHueSlider() {
