@@ -96,7 +96,7 @@
     padding: 10px;
   }
   div.page {
-    width: 485px;
+    width: 400px;
     margin: 0 5px;
   }
 </style>
