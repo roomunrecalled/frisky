@@ -5,7 +5,7 @@
   import FriskyPreview from './pages/FriskyPreview.svelte';
   import RoomPage from './pages/RoomPage.svelte';
 
-  import PalettePage from './pages/PalettePage.svelte';
+  import PalettePage from './pages/palettes/PalettePage.svelte';
   import BackdropPage from './pages/BackdropPage.svelte';
   import TilePage from './pages/TilePage.svelte';
   import SpritePage from './pages/SpritePage.svelte';
@@ -96,7 +96,7 @@
     padding: 10px;
   }
   div.page {
-    width: 480px;
-    margin: 0 12px;
+    width: 485px;
+    margin: 0 5px;
   }
 </style>

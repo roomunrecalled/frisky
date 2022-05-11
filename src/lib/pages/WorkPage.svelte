@@ -7,14 +7,14 @@
   const handleClick = value => () => (activeTabValue = value);
 </script>
 
-<div class={onLeft ? 'layout on_left' : 'layout on_right'}>
-  <div class={onLeft ? 'tabs on_left' : 'tabs on_right'}>
+<div class='layout {onLeft ? 'on_left' : 'on_right'}'>
+  <div class='tabs {onLeft ? 'on_left' : 'on_right'}'>
     <ul>
       {#each items as item}
         <li class={activeTabValue === item.value ? 'active' : ''} >
           <span on:click={handleClick(item.value)}
                 style='background-color: {item.color};
-                      {onLeft ? 'border-right' : 'border-left'}: 4px 
+                      border-{onLeft ? 'right' : 'left'}: 4px 
                         {activeTabValue === item.value ? 'solid' : 'transparent'} 
                         {item.color};
                       {onLeft && item.value === 0 ? 'font-weight: bold' : ''}' >
@@ -25,7 +25,7 @@
     </ul>
   </div>
 
-  <div class={onLeft ? 'box on_left' : 'box on_right'}
+  <div class='box {onLeft ? 'on_left' : 'on_right'}'
        style='background-color: {items[activeTabValue].color};'>
   {#each items as item}
     {#if activeTabValue === item.value}
@@ -49,7 +49,7 @@
   .box {
     border: 2px solid #000;
     border-radius: .25rem;
-    width: calc(100% - 100px);
+    width: calc(100% - 85px);
     padding: 1em 0em;
   }
   .box.on_left {
@@ -64,7 +64,7 @@
   }
 
   .tabs {
-    width: 90px;
+    width: 80px;
   }
 
   .tabs.on_left {
@@ -106,7 +106,7 @@
     cursor: pointer;
   }
   span:hover {
-    border-color: #bbb;
+    border-color: #eee8;
   }
 
   li.active {
