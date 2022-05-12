@@ -17,8 +17,8 @@
   function updatePos(newPos) {
     paneX = newPos[0];
     paneY = newPos[1];
-    updateColor();
     drawColorPickerPane();
+    updateColor();
     drawColorPickerCircle();
   }
 
@@ -48,8 +48,8 @@
   }
   function drawColorPickerCircle() {
     pickerPaneContext.beginPath();
-    pickerPaneContext.strokeStyle = currentColor.luminance() > .5 ? '#000C' : '#FFFC';
-    pickerPaneContext.arc(paneX, paneY, 4, 0, Math.PI * 2);
+    pickerPaneContext.strokeStyle = currentColor.hsv()[2] > .5 ? '#000' : '#FFF';
+    pickerPaneContext.arc(paneX-1, paneY-1, 5, 0, Math.PI * 2);
     pickerPaneContext.stroke();
   }
 
@@ -96,7 +96,7 @@
     <div class='{onLeft ? 'left' : 'right'} colorPreview'
         style='background-color: {currentColor.hex()}'></div>
     <canvas class='{onLeft ? 'left' : 'right'} colorPane'
-            on:mousedown={() => { selectingColor = true; }}
+            on:mousedown={(event) => { selectingColor = true; pickColorMove(event); }}
             on:mouseup={() => { selectingColor = false;}}
             on:mousemove={pickColorMove}
             on:mouseleave={() => { selectingColor = false;}}
