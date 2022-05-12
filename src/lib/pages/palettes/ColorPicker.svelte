@@ -17,19 +17,18 @@
   function updatePos(newPos) {
     paneX = newPos[0];
     paneY = newPos[1];
-    drawColorPickerPane();
-    updateColor();
-    drawColorPickerCircle();
+    updateColorPicker();
   }
 
   function setHue(hue) {
     currentHue = hue;
-    drawColorPickerPane();
-    updateColor();
-    drawColorPickerCircle();
+    updateColorPicker();
   }
 
   function updateColorPicker() {
+    drawColorPickerPane();
+    updateColor();
+    drawColorPickerCircle();
     //dispatch('color_picker_change', { rgbColor: chroma(currentColor).rgb(), isMouseUp: true });
   }
 
