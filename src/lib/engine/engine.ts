@@ -25,7 +25,7 @@ class FriskyEngine {
     actor_stage.width = 240;
     actor_stage.height = 160;
     actor_stage.scale = new PIXI.ObservablePoint(null, null, 2, 2);
-    actor_stage.addChild(sprite);
+    //actor_stage.addChild(sprite);
 
     center_stage.addChild(actor_stage);
 

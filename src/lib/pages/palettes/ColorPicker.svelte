@@ -5,28 +5,31 @@
 
   export let onLeft = false;
 
-  const channelSteps = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 
-                        0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff];
   const dispatch = createEventDispatcher();
-  let pickerPane, hueSlider, pickerPaneContext, hueSliderContext;
+  let pickerPane, hueSliderBg, pickerPaneContext, hueSliderContext;
+  let hueSliderPicker;
 
-  $: hueColor = pickerColors[0];
-  $: currentColor = clampColor([0, 0.5, 1.0], 'hsv');
-  const [paneWidth, paneHeight, sliderWidth, sliderHeight] = [204, 136, 276, 24];
+  const [paneWidth, paneHeight] = [204, 136];
   const [blockWidth, blockHeight] = [paneWidth/17, paneHeight/17];
 
-  function setColor(r,g,b) {
-    currentColor = clampColor([r,g,b]);
-    console.log(currentColor.hex());
+  let [currentHue, currentColor] = [pickerColors[0], chroma(pickerColors[0].hue)]
 
+  function setColor(color) {
+    currentColor = chroma(currentHue.hue);
+    updateColorPicker();
+  }
+
+  function setHue(hue) {
+    currentHue = hue;
+    // todo -- change this.
+    currentColor = chroma(currentHue.hue);
     updateColorPicker();
   }
 
   function updateColorPicker() {
     drawColorPickerPane();
-    drawHueSlider();
 
-    dispatch('color_picker_change', { rgbColor: currentColor.rgb(), isMouseUp: true });
+    //dispatch('color_picker_change', { rgbColor: chroma(currentColor).rgb(), isMouseUp: true });
   }
 
   function drawColorPickerPane() {
@@ -35,8 +38,7 @@
     pickerPaneContext.fillStyle = 'black';
     pickerPaneContext.fillRect(0, 0, paneWidth, paneHeight);
 
-    console.log(pickerColors);
-    const pickerColor = pickerColors[0];
+    const pickerColor = currentHue;
       for (let y = 0; y <= 16; y += 1) {
         for (let x = 0; x <= 16; x += 1) {
           const paneIndex = y * 17 + x;
@@ -46,36 +48,27 @@
     }
   }
 
-  function drawHueSlider() {
-    hueSlider.width = sliderWidth;
-    hueSlider.height = sliderHeight;
-
-    let pos = 0;
-    for (const pickerColor of pickerColors) {
-      hueSliderContext.fillStyle = pickerColor.hue;
-      hueSliderContext.fillRect(pos, 0, 3, sliderHeight);
-
-      pos += 3;
+  let selectingHue = false;
+  function pickHueStart() { selectingHue = true; }
+  function pickHueMove(event) {
+    if (selectingHue) {
+      pickHue(event);
     }
   }
+  function pickHueEnd() { selectingHue = false; }
+  function pickHue(event) {
+    const leftOffset = Math.max(0,event.pageX - hueSliderBg.offsetLeft);
+    setHue(pickerColors[Math.min(89, Math.floor(leftOffset/3))]);
 
-  function clampColor(color, space = 'rgb') {
-    const rgb = chroma(...color, space).rgb();
-    const clampedRgb = [0,0,0];
-
-    for (let c = 0; c < 3; c += 1) {
-      let clampedChannel = Math.min(255, Math.round(rgb[c] / 17) / 15 * 255);
-      clampedRgb[c] = clampedChannel;
+    if (hueSliderPicker) {
+      hueSliderPicker.style.left = `${Math.min(268, leftOffset - 2)}px`;
     }
- 
-    return chroma(clampedRgb);
   }
 
   onMount(() => {
     pickerPaneContext = pickerPane.getContext("2d");
-    hueSliderContext = hueSlider.getContext("2d");
 
-    setColor(0,0,0);
+    updateColorPicker();
   });
 </script>
 
@@ -86,8 +79,14 @@
     <canvas class='{onLeft ? 'left' : 'right'} colorPane'
             bind:this={pickerPane}></canvas>
   </div>
-  <canvas class='{onLeft ? ' left' : ' right'} hueSlider'
-          bind:this={hueSlider}></canvas>
+  <div  class='hue-slider-bg'
+        on:mousedown={pickHueStart} 
+        on:mousemove={pickHueMove} 
+        on:mouseup={pickHueEnd}
+        on:mouseleave={() => { selectingHue = false; }}
+        bind:this={hueSliderBg} >
+    <div  class='slider-picker' bind:this={hueSliderPicker}></div>
+  </div>
 </div>
 
 <style>
@@ -98,7 +97,7 @@
   }
 
   .colorPreview {
-    width: 74px;
+    width: 70px;
     margin: 1px 4px 0px 0px;
     border: 2px solid #ccc;
   }
@@ -109,9 +108,19 @@
     margin-bottom: 4px;
   }
 
-  .hueSlider {
-    background-color: #ccc;
-    padding: 2px;
+  .hue-slider-bg {
+    margin: auto;
+    width: 270px;
+    height: 24px;
+    padding-top: 2px;
+    background-image: url('/slider_bg.png');
+    border: 2px solid #ccc;
   }
-  
+  .slider-picker {
+    width: 2px;
+    height: 20px;
+    border: 1px solid #ccc;
+    background-color: white;
+    position: relative;
+  }
 </style>
