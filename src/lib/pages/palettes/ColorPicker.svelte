@@ -6,69 +6,88 @@
   export let onLeft = false;
 
   const dispatch = createEventDispatcher();
-  let pickerPane, hueSliderBg, pickerPaneContext, hueSliderContext;
-  let hueSliderPicker;
+  let pickerPane, hueSliderBg, pickerPaneContext, hueSliderPicker;
+  let [paneX, paneY] = [0,0]
 
   const [paneWidth, paneHeight] = [204, 136];
   const [blockWidth, blockHeight] = [paneWidth/17, paneHeight/17];
 
   let [currentHue, currentColor] = [pickerColors[0], chroma(pickerColors[0].hue)]
 
-  function setColor(color) {
-    currentColor = chroma(currentHue.hue);
-    updateColorPicker();
+  function updatePos(newPos) {
+    paneX = newPos[0];
+    paneY = newPos[1];
+    updateColor();
+    drawColorPickerPane();
+    drawColorPickerCircle();
   }
 
   function setHue(hue) {
     currentHue = hue;
-    // todo -- change this.
-    currentColor = chroma(currentHue.hue);
-    updateColorPicker();
+    drawColorPickerPane();
+    updateColor();
+    drawColorPickerCircle();
   }
 
   function updateColorPicker() {
-    drawColorPickerPane();
-
     //dispatch('color_picker_change', { rgbColor: chroma(currentColor).rgb(), isMouseUp: true });
   }
 
   function drawColorPickerPane() {
-    pickerPane.width = paneWidth;
-    pickerPane.height = paneHeight;
-    pickerPaneContext.fillStyle = 'black';
-    pickerPaneContext.fillRect(0, 0, paneWidth, paneHeight);
+    pickerPaneContext.clearRect(0, 0, paneWidth, paneHeight);
 
+    // draw the color pane
     const pickerColor = currentHue;
-      for (let y = 0; y <= 16; y += 1) {
-        for (let x = 0; x <= 16; x += 1) {
-          const paneIndex = y * 17 + x;
-          pickerPaneContext.fillStyle = chroma(pickerColor.paneColors[paneIndex]).hex();
-          pickerPaneContext.fillRect(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
+    for (let y = 0; y <= 16; y += 1) {
+      for (let x = 0; x <= 16; x += 1) {
+        const paneIndex = y * 17 + x;
+        pickerPaneContext.fillStyle = chroma(pickerColor.paneColors[paneIndex]).hex();
+        pickerPaneContext.fillRect(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
       }
     }
   }
+  function drawColorPickerCircle() {
+    pickerPaneContext.beginPath();
+    pickerPaneContext.strokeStyle = currentColor.luminance() > .5 ? '#000C' : '#FFFC';
+    pickerPaneContext.arc(paneX, paneY, 4, 0, Math.PI * 2);
+    pickerPaneContext.stroke();
+  }
 
+  // this flag is updated by inline event listeners on the slider
   let selectingHue = false;
-  function pickHueStart() { selectingHue = true; }
   function pickHueMove(event) {
     if (selectingHue) {
-      pickHue(event);
+      const leftOffset = Math.max(0,event.pageX - hueSliderBg.offsetLeft);
+      setHue(pickerColors[Math.min(89, Math.floor(leftOffset/3))]);
+
+      if (hueSliderPicker) {
+        hueSliderPicker.style.left = `${Math.min(268, leftOffset - 2)}px`;
+      }
     }
   }
-  function pickHueEnd() { selectingHue = false; }
-  function pickHue(event) {
-    const leftOffset = Math.max(0,event.pageX - hueSliderBg.offsetLeft);
-    setHue(pickerColors[Math.min(89, Math.floor(leftOffset/3))]);
+  // this flag is updated by inline event listeners on the color pane
+  let selectingColor = false;
+  function pickColorMove(event) {
+    if (selectingColor) {
+      const bounds = pickerPane.getBoundingClientRect();
+      const container = [event.clientX - bounds.left, event.clientY - bounds.top];
+      const containerCenter = [bounds.width / 2, bounds.height / 2];
 
-    if (hueSliderPicker) {
-      hueSliderPicker.style.left = `${Math.min(268, leftOffset - 2)}px`;
+      updatePos(container);
     }
+  }
+
+  function updateColor() {
+      const pixelData = pickerPaneContext.getImageData(paneX, paneY, 1, 1).data;
+      currentColor = chroma({r: pixelData[0], g: pixelData[1], b: pixelData[2]});
   }
 
   onMount(() => {
+    pickerPane.width = paneWidth;
+    pickerPane.height = paneHeight;
     pickerPaneContext = pickerPane.getContext("2d");
 
-    updateColorPicker();
+    setHue(pickerColors[0]);
   });
 </script>
 
@@ -77,12 +96,16 @@
     <div class='{onLeft ? 'left' : 'right'} colorPreview'
         style='background-color: {currentColor.hex()}'></div>
     <canvas class='{onLeft ? 'left' : 'right'} colorPane'
+            on:mousedown={() => { selectingColor = true; }}
+            on:mouseup={() => { selectingColor = false;}}
+            on:mousemove={pickColorMove}
+            on:mouseleave={() => { selectingColor = false;}}
             bind:this={pickerPane}></canvas>
   </div>
   <div  class='hue-slider-bg'
-        on:mousedown={pickHueStart} 
+        on:mousedown={() => { selectingHue = true; }} 
+        on:mouseup={() => { selectingHue = false; }}
         on:mousemove={pickHueMove} 
-        on:mouseup={pickHueEnd}
         on:mouseleave={() => { selectingHue = false; }}
         bind:this={hueSliderBg} >
     <div  class='slider-picker' bind:this={hueSliderPicker}></div>
@@ -92,10 +115,10 @@
 <style>
   .colorPane {
     float: right;
+    display: block;
     background-color: #ccc;
     padding: 2px;
   }
-
   .colorPreview {
     width: 70px;
     margin: 1px 4px 0px 0px;
