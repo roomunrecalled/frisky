@@ -14,14 +14,38 @@
 
   let [currentHue, currentColor] = [pickerColors[0], chroma(pickerColors[0].hue)]
 
+  function setColor(rgbColor) {
+    const newColor = chroma(rgbColor);
+    const hue = chroma(Math.round(newColor.get('hsv.h')), 1, 1, 'hsv');
+    const hueIndex = pickerColors.findIndex(
+      (pickerColor) => pickerColor.hue === hue.hex());
+    const newHue = pickerColors[hueIndex];
+    console.log(pickerColors[hueIndex])
+    const colorIndex = newHue.paneColors.findIndex(
+      (paneColor) => {
+        return paneColor[0] === newColor.rgb()[0] && 
+                paneColor[1] === newColor.rgb()[1] && 
+                paneColor[2] === newColor.rgb()[2]
+      });
+    console.log(`hue: ${hue}; hueIndex: ${hueIndex}; colorIndex: ${colorIndex}; newColor: ${newColor.rgb()}`);
+
+    const quotient = Math.floor(colorIndex/17);
+    paneY = quotient * blockHeight + 5;
+    paneX = (colorIndex % 17) * blockWidth + 10;
+    console.log(`(${paneX},${paneY})`)
+    currentHue = newHue;
+    hueSliderPicker.style.left = `${Math.min(268, hueIndex * 3 - 2)}px`;
+    updateColorPicker();
+  }
+
   function updatePos(newPos) {
     paneX = newPos[0];
     paneY = newPos[1];
     updateColorPicker();
   }
 
-  function setHue(hue) {
-    currentHue = hue;
+  function setHue(pickerColorHue) {
+    currentHue = pickerColorHue;
     updateColorPicker();
   }
 
@@ -69,8 +93,9 @@
   function pickColorMove(event) {
     if (selectingColor) {
       const bounds = pickerPane.getBoundingClientRect();
-      const container = [event.clientX - bounds.left, event.clientY - bounds.top];
-      const containerCenter = [bounds.width / 2, bounds.height / 2];
+      const container = [
+        Math.min(event.clientX - bounds.left, paneWidth-1),
+        Math.min(event.clientY - bounds.top, paneHeight-1)];
 
       updatePos(container);
     }
@@ -110,6 +135,8 @@
     <div  class='slider-picker' bind:this={hueSliderPicker}></div>
   </div>
 </div>
+
+<button on:click={() => setColor([17,238,0])}>TestButton</button>
 
 <style>
   .colorPane {
